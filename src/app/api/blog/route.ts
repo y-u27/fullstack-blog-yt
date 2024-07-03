@@ -1,6 +1,7 @@
-import { PrismaClient } from "@prisma/client/extension";
+import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 
+// インスタンス化
 const prisma = new PrismaClient();
 
 export async function main() {
@@ -15,11 +16,15 @@ export async function main() {
 export const GET = async (req: Request, res: NextResponse) => {
   try {
     await main();
+    // findMany→データベースの全記事取得
+    // ↓の場合のpostsは「schema.prisma」ファイルで作ったmodelのPostを小文字になったもの
     const posts = await prisma.post.findMany();
     return NextResponse.json({ message: "Success", posts }, { status: 200 });
   } catch (err) {
     return NextResponse.json({ message: "Error", err }, { status: 500 });
+    // finally→エラーが出ても成功しても絶対に実行される文章
   } finally {
+    // ↓接続を止める
     await prisma.$disconnect();
   }
 };
